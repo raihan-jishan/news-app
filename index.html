@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>express js news app</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <!-- navbar component -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="/?q=alt&pageno=1"
+                >Home</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link active"
+                aria-current="page"
+                href="/?q=current+news&pageno=1"
+                >Current News</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/?q=weather&pageno=1">Weather</a>
+            </li>
+
+            <li class="nav-item">
+              <a href="/?q=sports&pageno=1" class="nav-link">Sports</a>
+            </li>
+          </ul>
+          <form class="d-flex" role="search">
+            <input
+              name="q"
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <!--  for search bpx functionilty  -->
+            <input
+              name="pageno"
+              class="form-control me-2"
+              type="hidden"
+              value="1"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <button class="btn btn-outline-success" type="submit">
+              Search
+            </button>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <!-- navbar end there component -->
+    <!--  container  -->
+    <div class="container row mx-auto">
+      <div id="content" class="row">
+        <h2 class="text-lg-start text-center">Loading ... ...</h2>
+        <!--  content div -->
+      </div>
+
+      <!--  next | previus button componnet -->
+      <div class="prevNext my-4 d-flex justify-content-center">
+        <!-- button groups -->
+        <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            <li class="page-item">
+              <a id="pre" class="page-link" href="#">Previous</a>
+            </li>
+
+            <li class="page-item">
+              <a id="next" class="page-link" href="#">Next</a>
+            </li>
+          </ul>
+        </nav>
+        <!--  end there -->
+      </div>
+      <!--  previus componnet end div -->
+      <!--  container div -->
+    </div>
+
+    <!--  container end --> 
+    <!-- boostraqp cdn link -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+      crossorigin="anonymous"
+    ></script>
+    <!--  inline file jsvascript -->
+    <script>
+      //  writing the code  
+      let articlePerPage; // declare variables
+      let totalPages;
+      let query = window.location.search
+        .split("?")[1]
+        .split("&")[0]
+        .split("=")[1];
+      // pageNumber
+      let page = parseInt(
+        window.location.search.split("?")[1].split("&")[1].split("=")[1]
+      );
+      console.log(page, query); // chech the the result in console
+      //  initialize API key variable 
+   
+      //  fetchApi from news Api  | function
+      const fetchNews = async (query, pageNo) => {
+        let a = await fetch(
+          `/api?q=${query}&apiKey=0d2c0d3a6f2d4ac7997fbc950194ffbb&pageSize=10&page=${pageNo}`
+        ); // api fetch function
+        let r = await a.json();
+        console.log(r); // for testing
+        totalPages = Math.ceil(r.totalResulte / articlePerPage);
+        //  previus func
+        pre.href = `/?q${query}&pageno=${page - 1}`;
+        //  next func
+        next.href = `/?q${query}&pageno=${page + 1}`;
+        //  diclare variable
+        let str = "";
+        //  for loop
+        for (let item of r.articles) {
+          str =
+            str +
+            `
+          <div class="card m-2" style="width: 18rem">
+        <img src="${item.urlToImage}"class="card-img-top" alt="..." />
+        <div class="card-body">
+          <h5 class="card-title">${item.title}</h5>
+          <p class="card-text">
+        ${item.description}
+          </p>
+          <a target="_blank" href=${item.url} class="btn btn-primary">Read More ... . </a>
+        </div>
+      </div>
+          `;
+        }
+        content.innerHTML = str;
+      };
+
+      fetchNews(query, page);
+    </script>
+    <!--  initial file js end -->
+  </body>
+</html>
